@@ -16,7 +16,15 @@ fn main() {
         match stream {
             Ok(mut _stream) => {
                 _stream.read(&mut arr).unwrap();
-                _stream.write(b"+PONG\r\n").unwrap();
+                let input = String::from_utf8(arr.to_vec()).unwrap();
+
+                let size = input.split("\n")
+                    .filter(|&s| { s == "PING" })
+                    .count();
+
+                for _ in 0..size {
+                    _stream.write(b"+PONG\r\n").unwrap();
+                }
             }
             Err(e) => {
                 println!("error: {}", e);
