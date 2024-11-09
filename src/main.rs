@@ -1,4 +1,6 @@
 #![allow(unused_imports)]
+
+use std::io::{Read, Write};
 use std::net::TcpListener;
 
 fn main() {
@@ -10,9 +12,11 @@ fn main() {
     let listener = TcpListener::bind("127.0.0.1:6379").unwrap();
 
     for stream in listener.incoming() {
+        let mut arr = [0u8; 512];
         match stream {
-            Ok(_stream) => {
-                println!("accepted new connection");
+            Ok(mut _stream) => {
+                _stream.read(&mut arr).unwrap();
+                _stream.write(b"+PONG\r\n").unwrap();
             }
             Err(e) => {
                 println!("error: {}", e);
