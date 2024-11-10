@@ -2,6 +2,7 @@
 
 use std::io::{Read, Write};
 use std::net::{TcpListener, TcpStream};
+use std::thread;
 
 fn main() {
     // You can use print statements as follows for debugging, they'll be visible when running tests.
@@ -15,7 +16,9 @@ fn main() {
 
         match stream {
             Ok(_stream) => {
-                handle_client(_stream);
+                thread::spawn(| | {
+                    handle_client(_stream);
+                });
             }
             Err(e) => {
                 println!("Logging: {}", e);
