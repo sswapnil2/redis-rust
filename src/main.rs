@@ -1,8 +1,13 @@
 #![allow(unused_imports)]
 
+mod protocol;
+
 use std::io::{Read, Write};
 use std::net::{TcpListener, TcpStream};
+use std::str::from_utf8;
 use std::thread;
+use protocol::resp::Resp;
+use protocol::executor::Executor;
 
 fn main() {
     // You can use print statements as follows for debugging, they'll be visible when running tests.
@@ -27,16 +32,24 @@ fn main() {
     }
 }
 
-fn handle_client(mut stream: TcpStream) {
+fn handle_client(mut stream: TcpStream) -> Option<()>{
     let mut buf = [0u8; 50];
 
     loop {
         let bytes = stream.read(&mut  buf).unwrap();
         if bytes == 0 {
-            return;
+            return None;
         }
 
-        stream.write_all(b"+PONG\r\n").unwrap();
+        let mut out = Executor::execute(&buf)?;
+        println!("Output: {}", out);
+        stream.write_all(&mut out.as_bytes()).ok()?;
+
+        // if let Some(resp) = Resp::parse(&buf) {
+        //     let mut out = resp.raw.as_slice();
+        //     stream.write_all(&mut out).unwrap();
+        // }
+
     }
 
 }
