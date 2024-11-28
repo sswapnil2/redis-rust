@@ -5,13 +5,15 @@ use crate::protocol::value::Value;
 #[derive(Debug)]
 pub struct Store {
     map: Arc<RwLock<HashMap<String, Value>>>,
+    expiry_map: HashMap<String, u128>
 }
 
 impl Store {
 
     pub fn new() -> Self {
         Store {
-            map: Arc::new(RwLock::new(HashMap::new()))
+            map: Arc::new(RwLock::new(HashMap::new())),
+            expiry_map: HashMap::new()
         }
     }
 
@@ -23,6 +25,14 @@ impl Store {
     pub fn get(&mut self, key: &str) -> Option<Value> {
         let map = self.map.read().unwrap();
         map.get(key).cloned()
+    }
+
+    pub fn set_expiry(&mut self, key: &str, expiry_ts: u128) {
+        self.expiry_map.insert(key.to_string(), expiry_ts);
+    }
+
+    pub fn get_expiry(&self, key: &str) -> Option<u128> {
+        self.expiry_map.get(key).cloned()
     }
 }
 

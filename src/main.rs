@@ -37,7 +37,7 @@ fn main() {
 }
 
 fn handle_client(app_state:  Arc<Mutex<Store>>, mut stream: TcpStream) {
-    let mut buf = [0u8; 50];
+    let mut buf = [0u8; 1024];
 
     loop {
 
